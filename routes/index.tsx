@@ -1,20 +1,20 @@
 // support jsx on deno deploy
 /** @jsxImportSource https://esm.sh/react@18.2.0 */
 
-import { Head, Link } from "aleph/react";
+import { Head, Link } from 'aleph/react'
 
 const externalLinks = [
-  ["Get Started", "https://alephjs.org/docs/get-started"],
-  ["Docs", "https://alephjs.org/docs"],
-  ["Github", "https://github.com/alephjs/aleph.js"],
-];
+  ['Get Started', 'https://alephjs.org/docs/get-started'],
+  ['Docs', 'https://alephjs.org/docs'],
+  ['Github', 'https://github.com/alephjs/aleph.js'],
+]
 
 export default function Index() {
   return (
     <div
       className="w-screen flex flex-col items-center justify-center"
       style={{
-        height: "calc(100vh - 2 * 80px)",
+        height: 'calc(100vh - 2 * 80px)',
       }}
     >
       <Head>
@@ -24,12 +24,10 @@ export default function Index() {
       <p className="logo">
         <img src="./assets/logo.svg" width="75" height="75" title="Aleph.js" />
       </p>
-      <h1 className="text-3xl font-bold mt-2">
-        The Fullstack Framework in Deno.
-      </h1>
+      <h1 className="text-3xl font-bold mt-2">The Fullstack Framework in Deno.</h1>
       <p className="text-center text-md text-gray-800">
-        <strong>Aleph.js</strong> gives you the best developer experience for building web applications<br />{" "}
-        with modern toolings.
+        <strong>Aleph.js</strong> gives you the best developer experience for building web applications
+        <br /> with modern toolings.
       </p>
       <div className="flex gap-4 mt-2">
         {externalLinks.map(([text, href]) => (
@@ -59,5 +57,5 @@ export default function Index() {
         </Link>
       </nav>
     </div>
-  );
+  )
 }

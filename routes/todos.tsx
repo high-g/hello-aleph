@@ -1,61 +1,65 @@
 // support jsx on deno deploy
 /** @jsxImportSource https://esm.sh/react@18.2.0 */
 
-import { Head, useData } from "aleph/react";
+import { Head, useData } from 'aleph/react'
 
 type TodoItem = {
-  id: number;
-  message: string;
-  completed: boolean;
-};
+  id: number
+  message: string
+  completed: boolean
+}
 
 type Store = {
-  todos: TodoItem[];
-};
+  todos: TodoItem[]
+}
 
 const store: Store = {
-  todos: JSON.parse(window.localStorage?.getItem("todos") || "[]"),
-};
+  todos: JSON.parse(window.localStorage?.getItem('todos') || '[]'),
+}
 
 export const data: Data<Store, Store> = {
   cacheTtl: 0, // no cache
   get: () => {
-    return store;
+    return store
   },
   put: async (req) => {
-    const { message } = await req.json();
-    if (typeof message === "string") {
-      store.todos.push({ id: Date.now(), message, completed: false });
-      window.localStorage?.setItem("todos", JSON.stringify(store.todos));
+    const { message } = await req.json()
+    if (typeof message === 'string') {
+      store.todos.push({ id: Date.now(), message, completed: false })
+      window.localStorage?.setItem('todos', JSON.stringify(store.todos))
     }
-    return store;
+    return store
   },
   patch: async (req) => {
-    const { id, message, completed } = await req.json();
-    const todo = store.todos.find((todo) => todo.id === id);
+    const { id, message, completed } = await req.json()
+    const todo = store.todos.find((todo) => todo.id === id)
     if (todo) {
-      if (typeof message === "string") {
-        todo.message = message;
+      if (typeof message === 'string') {
+        todo.message = message
       }
-      if (typeof completed === "boolean") {
-        todo.completed = completed;
+      if (typeof completed === 'boolean') {
+        todo.completed = completed
       }
-      window.localStorage?.setItem("todos", JSON.stringify(store.todos));
+      window.localStorage?.setItem('todos', JSON.stringify(store.todos))
     }
-    return store;
+    return store
   },
   delete: async (req) => {
-    const { id } = await req.json();
+    const { id } = await req.json()
     if (id) {
-      store.todos = store.todos.filter((todo) => todo.id !== id);
-      window.localStorage?.setItem("todos", JSON.stringify(store.todos));
+      store.todos = store.todos.filter((todo) => todo.id !== id)
+      window.localStorage?.setItem('todos', JSON.stringify(store.todos))
     }
-    return store;
+    return store
   },
-};
+}
 
 export default function Todos() {
-  const { data: { todos }, isMutating, mutation } = useData<Store>();
+  const {
+    data: { todos },
+    isMutating,
+    mutation,
+  } = useData<Store>()
 
   return (
     <div className="w-9/10 max-w-150 mx-auto mt-15">
@@ -66,7 +70,9 @@ export default function Todos() {
       <h1 className="flex items-center justify-between text-5xl font-200">
         <span>Todos</span>
         {todos.length > 0 && (
-          <em className="text-3xl text-gray-300">{todos.filter((todo) => todo.completed).length}/{todos.length}</em>
+          <em className="text-3xl text-gray-300">
+            {todos.filter((todo) => todo.completed).length}/{todos.length}
+          </em>
         )}
       </h1>
       <ul className="mt-6">
@@ -74,23 +80,24 @@ export default function Todos() {
           <li className="flex items-center justify-between gap-2 px-3 py-1.5" key={todo.id}>
             <div
               className={[
-                "flex items-center justify-center w-4.5 h-4.5 border border-gray-300 rounded-full",
-                todo.completed && "!border-teal-500/50",
-              ].filter(Boolean).join(" ")}
-              onClick={() => mutation.patch({ id: todo.id, completed: !todo.completed }, "replace")}
+                'flex items-center justify-center w-4.5 h-4.5 border border-gray-300 rounded-full',
+                todo.completed && '!border-teal-500/50',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              onClick={() => mutation.patch({ id: todo.id, completed: !todo.completed }, 'replace')}
             >
               {todo.completed && <span className="inline-block w-1.5 h-1.5 bg-teal-500 rounded-full" />}
             </div>
             <label
-              className={[
-                "flex-1 text-xl text-gray-700 font-300",
-                todo.completed && "line-through !text-gray-400",
-              ].filter(Boolean).join(" ")}
+              className={['flex-1 text-xl text-gray-700 font-300', todo.completed && 'line-through !text-gray-400']
+                .filter(Boolean)
+                .join(' ')}
             >
               {todo.message}
             </label>
             {todo.id > 0 && (
-              <button onClick={() => mutation.delete({ id: todo.id }, "replace")}>
+              <button onClick={() => mutation.delete({ id: todo.id }, 'replace')}>
                 <svg
                   className="w-5 h-5 text-gray-300 hover:text-red-500"
                   viewBox="0 0 32 32"
@@ -110,25 +117,28 @@ export default function Todos() {
       <form
         className="mt-6"
         onSubmit={async (e) => {
-          e.preventDefault();
-          const form = e.currentTarget;
-          const fd = new FormData(form);
-          const message = fd.get("message")?.toString().trim();
+          e.preventDefault()
+          const form = e.currentTarget
+          const fd = new FormData(form)
+          const message = fd.get('message')?.toString().trim()
           if (message) {
-            await mutation.put({ message }, {
-              // optimistic update data without waiting for the server response
-              optimisticUpdate: (data) => {
-                return {
-                  todos: [...data.todos, { id: 0, message, completed: false }],
-                };
-              },
-              // replace the data with the new data that is from the server response
-              replace: true,
-            });
-            form.reset();
+            await mutation.put(
+              { message },
+              {
+                // optimistic update data without waiting for the server response
+                optimisticUpdate: (data) => {
+                  return {
+                    todos: [...data.todos, { id: 0, message, completed: false }],
+                  }
+                },
+                // replace the data with the new data that is from the server response
+                replace: true,
+              }
+            )
+            form.reset()
             setTimeout(() => {
-              form.querySelector("input")?.focus();
-            }, 0);
+              form.querySelector('input')?.focus()
+            }, 0)
           }
         }}
       >
@@ -143,5 +153,5 @@ export default function Todos() {
         />
       </form>
     </div>
-  );
+  )
 }
